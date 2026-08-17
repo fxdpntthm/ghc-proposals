@@ -13,7 +13,7 @@ Uniform Template Haskell and Rebindable Syntax
 .. sectnum::
 .. contents::
 
-This proposal makes the behaviour of typed template haskell and untyped template haskell with rebindable syntax uniform.
+This proposal makes the behaviour of typed and untyped template haskell with rebindable syntax uniform.
 
 Motivation
 ----------
@@ -43,7 +43,7 @@ definition of `ifThenElse`.
 The second module `Client` splices in the two declarations defined in the `Lib` module. 
 
 ::
-  
+
   {-# Language TemplateHaskell #-}
   module Client where
   import Lib 
@@ -61,7 +61,7 @@ The second module `Client` splices in the two declarations defined in the `Lib` 
 
 
 The current behaviour is justified as follows: 
-For typed template haskell quotes (`t2`), the type checking of the expression is performed at definition site. Thus the expression 
+For typed template haskell quotes (`t1`), the type checking of the expression is performed at definition site. Thus, the expression 
 `[|| if True then 10 else 15 ||]`` is typechecked after renaming at the definition (in `Lib` module) thus, with the 
 rebindable syntax flag enabled, the expression is transformed to `ifThenElse True then 10 else 15` while splicing in `Client` module.
 
@@ -98,24 +98,23 @@ The proposal will also make the interaction between `OverloadedLists` and `Templ
 
 Costs and Drawbacks
 -------------------
-Give an estimate on development and maintenance costs. List how this affects
-learnability of the language for novice users. Define and list any remaining
-drawbacks that cannot be resolved.
+It is possible for typed template haskell quotes fail to type check during splice time. (Check this)
 
 
 Backward Compatibility
 ----------------------
-The following change is backwards in compatible and may change the behaviour of the programs
+The following change is backwards incompatible and may change the behaviour of the programs
 However, `TemplateHaskell` and `RebindableSyntax` are two language features that rarely used together hence 
 breakage is expected to happen very rarely.
 
-
-The proposed change significantly simplifies the compiler implementation and also makes the behaviour uniform reducing
+The advantae is that the proposed change significantly simplifies the compiler implementation and also makes the behaviour uniform reducing
 overall complexity for the user and the compiler implementor.
 
 Alternatives
 ------------
 
+
+ 
 List alternative designs to your proposed change. Both existing
 workarounds, or alternative choices for the changes. Explain
 the reasons for choosing the proposed change over these alternative:
