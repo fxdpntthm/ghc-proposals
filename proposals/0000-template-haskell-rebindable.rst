@@ -1,20 +1,6 @@
-Notes on reStructuredText - delete this section before submitting
-==================================================================
 
-The proposals are submitted in reStructuredText format.  To get inline code, enclose text in double backticks, ``like this``.  To get block code, use a double colon and indent by at least one space
-
-::
-
- like this
- and
-
- this too
-
-To get hyperlinks, use backticks, angle brackets, and an underscore `like this <http://www.haskell.org/>`_.
-
-
-Proposal title
-==============
+Uniform Template Haskell and Rebindable Syntax
+===============================================
 
 .. author:: Apoorv Ingle (@fxdpntthm)
 .. date-accepted:: 
@@ -29,7 +15,6 @@ Proposal title
 
 This proposal makes the behaviour of typed template haskell and untyped template haskell with rebindable syntax uniform.
 
-
 Motivation
 ----------
 The behaviour of typed template haskell and untyped template haskell is not uniform when used with rebindable syntax.
@@ -39,6 +24,7 @@ The `Lib` modules declares `int_QuoteTTH` and `int_QuoteUTH`. Both quote the sam
 definition of `ifThenElse`.
 
 ::
+
   {-# Language TemplateHaskell #-}
   {-# Language RebindableSyntax #-}
   module Lib where 
@@ -57,6 +43,7 @@ definition of `ifThenElse`.
 The second module `Client` splices in the two declarations defined in the `Lib` module. 
 
 ::
+  
   {-# Language TemplateHaskell #-}
   module Client where
   import Lib 
@@ -77,8 +64,9 @@ The current behaviour is justified as follows:
 For typed template haskell quotes (`t2`), the type checking of the expression is performed at definition site. Thus the expression 
 `[|| if True then 10 else 15 ||]`` is typechecked after renaming at the definition (in `Lib` module) thus, with the 
 rebindable syntax flag enabled, the expression is transformed to `ifThenElse True then 10 else 15` while splicing in `Client` module.
+
 On the other hand, for untyped template haskell quotes (`t2`) the expression `[| if True then 10 else 15 |]` is first spliced in `Client` module
-and then typechecked. As rebindable syntax is turned off in the `Client` module, it is evaluated to `if True then 10 else 15`.
+and then typechecked. As rebindable syntax is turned off in the `Client` module, the splice is evaluated to `if True then 10 else 15`.
 
 
 Proposed Change Specification
@@ -86,7 +74,7 @@ Proposed Change Specification
 
 Rebindable syntax disambiguation happens at splice time for both typed template haskell and untyped template haskell.
 
-In the above `Client` module,  `t1` will be spliced in as `if True then 10 else 15` just as `t2`.
+In the above `Client` module, `t1` will be spliced in as `if True then 10 else 15` just as `t2`. They will both have the same value at evaluation.
 
 Proposed Library Change Specification
 -------------------------------------
@@ -105,7 +93,7 @@ thing is to do with the proposal.
 Effect and Interactions
 -----------------------
 
-The proposal will also make the interaction between `OverloadedLists` and 
+The proposal will also make the interaction between `OverloadedLists` and `TemplateHaskell` uniform wrt typed and untyped quotes.
 
 
 Costs and Drawbacks
